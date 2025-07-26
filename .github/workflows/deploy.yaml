@@ -28,6 +28,10 @@ jobs:
         gcloud config set compute/region us-central1
         gcloud config set account $(gcloud auth list --filter=status:ACTIVE --format="value(a>
 
+    - name: Install gke-gcloud-auth-plugin
+      run: |
+        gcloud components install gke-gcloud-auth-plugin --quiet
+
     - name: Get GKE credentials
       run: |
         gcloud container clusters get-credentials demo-gke-iris-cluster --region us-central1
