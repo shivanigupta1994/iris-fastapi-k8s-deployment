@@ -13,28 +13,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # ✅ Use the correct authentication method
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+    # ✅ Set up gcloud CLI (after auth)
     - name: Set up Google Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        export_default_credentials: true
+        install_components: 'gke-gcloud-auth-plugin'
 
-    - name: Authenticate gcloud CLI with service account
-      run: |
-        echo "${{ secrets.GCP_SA_KEY }}" > gcloud-key.json
-        gcloud auth activate-service-account --key-file=gcloud-key.json
-        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-        gcloud config set compute/region us-central1
-        gcloud config set account $(gcloud auth list --filter=status:ACTIVE --format="value(account)")
-
+    # ✅ Get cluster credentials
     - name: Get GKE credentials
       run: |
         gcloud container clusters get-credentials demo-gke-iris-cluster --region us-central1
 
+    # ✅ Deploy to GKE using kubectl
     - name: Deploy to GKE
       run: |
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
-
-
