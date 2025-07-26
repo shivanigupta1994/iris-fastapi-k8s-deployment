@@ -23,19 +23,12 @@ jobs:
 
     - name: Authenticate gcloud CLI with service account
       run: |
-        echo "$GCP_SA_KEY" > gcloud-key.json
+        echo "${{ secrets.GCP_PROJECT_ID }}" > gcloud-key.json
         gcloud auth activate-service-account --key-file=gcloud-key.json
-        gcloud config set project $GCP_PROJECT_ID
+        gcloud config set project ${{ secrets.GCP_SA_KEY }}
         gcloud config set compute/region us-central1
         gcloud config set account $(gcloud auth list --filter=status:ACTIVE --format="value(account)")
-      env:
-        GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-
-    - name: Install gke-gcloud-auth-plugin
-      run: |
-        gcloud components install gke-gcloud-auth-plugin --quiet
-
+     
     - name: Get GKE credentials
       run: |
         gcloud container clusters get-credentials demo-gke-iris-cluster --region us-central1
