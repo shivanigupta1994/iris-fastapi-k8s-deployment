@@ -1,4 +1,3 @@
-
 name: Deploy to GKE
 
 on:
@@ -30,10 +29,12 @@ jobs:
         gcloud config set account $(gcloud auth list --filter=status:ACTIVE --format="value(a>
 
     - name: Get GKE credentials
-       run: |
+      run: |
         gcloud container clusters get-credentials demo-gke-iris-cluster --region us-central1
 
     - name: Deploy to GKE
       run: |
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
+
+
